@@ -40,7 +40,14 @@ Para el análisis se excluyen los registros sin identificador de cliente, las fa
 
 **Monetary:** importe total de las compras válidas, calculado a partir de la cantidad y el precio unitario.
 
-**Trend:** diferencia entre el gasto del último mes disponible y el promedio histórico mensual del cliente. El promedio considera los meses anteriores en los que el cliente registró compras.
+**Trend:** diferencia entre `GastoUltimoMes` y `PromedioHistorico`. Un valor positivo indica un gasto superior al promedio histórico y uno negativo indica un gasto inferior. Si no existe un promedio histórico para comparar, la tendencia queda sin definir.
+
+
+**GastoUltimoMes:** importe total de las compras del cliente durante el último mes disponible en el dataset. Si no registró compras en ese mes, el gasto se considera cero.
+
+**PromedioHistorico:** promedio del gasto mensual del cliente en los meses anteriores al último mes disponible, considerando los meses en los que registró compras. Si no existen meses anteriores con compras, el valor queda sin definir.
+
+
 
 ## Funciones de ventana
 
@@ -57,11 +64,10 @@ Se utiliza `PARTITION BY CustomerID` para separar los cálculos por cliente y `O
 Clonar el repositorio y entrar en la carpeta del proyecto.
 
 powershell
-git clone URL_DEL_REPOSITORIO
-cd Ingenieria-Features-SQL
+git clone https://github.com/Debk21/Ingenier-a-de-Features-con-SQL-Anal-tico-Avanzado.git
+cd Ingenier-a-de-Features-con-SQL-Anal-tico-Avanzado
 
 
-Reemplazar `URL_DEL_REPOSITORIO` por la URL real del repositorio de GitHub.
 
 ### 2. Obtener el dataset
 

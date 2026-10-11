@@ -84,31 +84,31 @@ FROM GastoMensual
 
 ),
 
--- Obtener el gasto del ultimo mes y su promedio historico.
--- Si un cliente no compro en el ultimo mes global, su gasto se completara con cero en el resultado final.
+-- Obtener el gasto del ultimo mes y el promedio de los meses anteriores.
+
 TendenciaCliente AS (
-SELECT
-CustomerID,
+    SELECT
+        g.CustomerID,
 
+        COALESCE(
+            MAX(CASE
+                WHEN g.Mes = u.UltimoMesDisponible
+                THEN g.GastoMensual
+            END),
+            0
+        ) AS GastoUltimoMes,
 
-    MAX(
-        CASE
-            WHEN Mes = UltimoMesDisponible
-            THEN GastoMensual
-        END
-    ) AS GastoUltimoMes,
+        AVG(CASE
+            WHEN g.Mes < u.UltimoMesDisponible
+            THEN g.GastoMensual
+        END) AS PromedioHistorico
 
-    MAX(
-        CASE
-            WHEN Mes = UltimoMesDisponible
-            THEN PromedioHistorico
-        END
-    ) AS PromedioHistorico
-
-FROM AnalisisMensual
-GROUP BY CustomerID
-
-
+    FROM GastoMensual AS g
+    CROSS JOIN (
+        SELECT MAX(Mes) AS UltimoMesDisponible
+        FROM GastoMensual
+    ) AS u
+    GROUP BY g.CustomerID
 )
 
 -- Unir las metricas RFM con el analisis de tendencia.
@@ -123,8 +123,11 @@ COALESCE(t.GastoUltimoMes, 0) AS GastoUltimoMes,
 t.PromedioHistorico,
 
 
-COALESCE(t.GastoUltimoMes, 0)
-    - COALESCE(t.PromedioHistorico, 0) AS Trend
+CASE
+    WHEN t.PromedioHistorico IS NOT NULL
+    THEN COALESCE(t.GastoUltimoMes, 0) - t.PromedioHistorico
+    ELSE NULL
+END AS Trend
 
 
 FROM MetricasRFM AS r
