@@ -37,8 +37,6 @@ try:
         lector = csv.DictReader(archivo)
 
         for fila in lector:
-            # Todo el procesamiento de cada fila
-            # debe quedar dentro de este bloque.
             invoice_no = fila["InvoiceNo"] or None
             stock_code = fila["StockCode"] or None
             description = fila["Description"] or None
@@ -49,7 +47,7 @@ try:
                 fila["InvoiceDate"],
                 "%Y-%m-%d %H:%M:%S"
             )
-            
+
             unit_price = Decimal(fila["UnitPrice"])
 
             customer_raw = fila["CustomerID"].strip()
